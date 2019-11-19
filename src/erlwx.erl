@@ -8,7 +8,7 @@
 
 -export([
 		 test_get_access_token/0,
-		 % test_check_session_key/0,
+		 test_check_session_key/0,
 		 test_code_2_session/0
 		]).
 
@@ -69,6 +69,7 @@ code_2_session(AppId, Secret, Js_Code, Grant_Type) ->
 						"&grant_type=", Grant_Type]),
 	case erlwx_util:http_get(Url) of
 		{ok, Body} ->
+			io:format("haoxian ~p~n", [{jsx:decode(list_to_binary(Body), [return_maps])}]),
 			case jsx:decode(list_to_binary(Body), [return_maps]) of
 				#{<<"openid">> := OpenId,
 				  <<"session_key">> := SessionKey,
@@ -76,7 +77,7 @@ code_2_session(AppId, Secret, Js_Code, Grant_Type) ->
 					{ok, OpenId, SessionKey, UnionId};
 				#{<<"openid">> := OpenId,
 				  <<"session_key">> := SessionKey} ->
-					{ok, OpenId, SessionKey, 0};
+					{ok, OpenId, SessionKey, <<"0">>};
 				#{<<"errcode">> := ErrCode,
 				  <<"errmsg">> := ErrMsg} ->
 					{error, ErrCode, ErrMsg};
@@ -95,9 +96,9 @@ test_get_access_token() ->
 	spawn(fun() -> io:format("~p~n", [get_access_token(?APP_ID,  "a8c046f33b4921f2066cefc06d0f53635")]) end),
 	spawn(fun() -> io:format("~p~n", [get_access_token(?APP_ID, ?APP_SECRET)]) end).
 
-% test_check_session_key() ->
-%     check_session_key(?APP_ID, ?APP_SECRET).
-
+test_check_session_key() ->
+	check_session_key("", "", "").
 
 test_code_2_session() ->
-	spawn(fun() -> io:format("~p~n", [code_2_session(?APP_ID, ?APP_SECRET, "123456")]) end).
+	spawn(fun() -> io:format("~p~n", [code_2_session(?APP_ID, ?APP_SECRET, "043j2Z8r0aBHhm1Gkb7r0gyV8r0j2Z81")]) end).
+
