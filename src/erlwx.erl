@@ -3,7 +3,9 @@
 -export([
 		 get_access_token/2,
 		 check_session_key/3,
-		 code_2_session/3
+		 code_2_session/3,
+		 check_signature/3,
+		 check_wx_biz_data_crypt/4
 		]).
 
 -export([
@@ -13,79 +15,24 @@
 		]).
 
 get_access_token(AppId, Secret) ->
-	get_access_token("client_credential", AppId, Secret).
-get_access_token(Grant_Type, AppId, Secret) ->
-	Url = lists:concat(["https://api.weixin.qq.com/cgi-bin/token?",
-						"grant_type=", Grant_Type,
-						"&appid=", AppId,
-						"&secret=", Secret]),
-	case erlwx_util:http_get(Url) of
-		{ok, Body} ->
-			case jsx:decode(list_to_binary(Body), [return_maps]) of
-				#{<<"access_token">> := AccessToken,
-				  <<"expires_in">> := ExpiresIn} ->
-					{ok, AccessToken, ExpiresIn};
-				#{<<"errcode">> := ErrCode,
-				  <<"errmsg">> := ErrMsg} ->
-					{error, ErrCode, ErrMsg};
-				_ ->
-					{error, json_to_data_error, Body}
-			end;
-		_ ->
-			{error, http_error, Url}
-	end.
-
+	erlwx_api:get_access_token(AppId, Secret).
 
 check_session_key(AccessToken, Signature, OpenId) ->
-	check_session_key(AccessToken, Signature, OpenId, "hmac_sha256").
-check_session_key(AccessToken, Signature, OpenId, Sig_Method) ->
-	Url = lists:concat(["https://api.weixin.qq.com/wxa/checksession?",
-						"access_token=", AccessToken,
-						"&signature=", Signature,
-						"&openid=", OpenId,
-						"&sig_method=", Sig_Method]),
-	case erlwx_util:http_get(Url) of
-		{ok, Body} ->
-			case jsx:decode(list_to_binary(Body), [return_maps]) of
-				#{<<"errcode">> := ErrCode} when ErrCode == 0->
-					{ok};
-				#{<<"errcode">> := ErrCode,
-				  <<"errmsg">> := ErrMsg} ->
-					{error, ErrCode, ErrMsg};
-				_ ->
-					{error, json_to_data_error, Body}
-			end;
-		_ ->
-			{error, http_error, Url}
-	end.
+	erlwx_api:check_session_key(AccessToken, Signature, OpenId).
 
 code_2_session(AppId, Secret, Js_Code) ->
-	code_2_session(AppId, Secret, Js_Code, "authorization_code").
-code_2_session(AppId, Secret, Js_Code, Grant_Type) ->
-	Url = lists:concat(["https://api.weixin.qq.com/sns/jscode2session?",
-						"appid=", AppId,
-						"&secret=", Secret,
-						"&js_code=", Js_Code,
-						"&grant_type=", Grant_Type]),
-	case erlwx_util:http_get(Url) of
-		{ok, Body} ->
-			io:format("haoxian ~p~n", [{jsx:decode(list_to_binary(Body), [return_maps])}]),
-			case jsx:decode(list_to_binary(Body), [return_maps]) of
-				#{<<"openid">> := OpenId,
-				  <<"session_key">> := SessionKey,
-				  <<"unionid">> := UnionId} ->
-					{ok, OpenId, SessionKey, UnionId};
-				#{<<"openid">> := OpenId,
-				  <<"session_key">> := SessionKey} ->
-					{ok, OpenId, SessionKey, <<"0">>};
-				#{<<"errcode">> := ErrCode,
-				  <<"errmsg">> := ErrMsg} ->
-					{error, ErrCode, ErrMsg};
-				_ ->
-					{error, json_to_data_error, Body}
-			end;
-		_ ->
-			{error, http_error, Url}
+	erlwx_api:code_2_session(AppId, Secret, Js_Code).
+
+check_signature(RawData, Signature1, SessionKey) ->
+	Signature2 = erlwx_util:sha1(<<RawData/binary, SessionKey/binary>>),
+	Signature1 == Signature2.
+
+check_wx_biz_data_crypt(AppId, SessionKey, Iv, EncryptedData) ->
+	case wx_biz_data_crypt:decrypt(AppId, SessionKey, Iv, EncryptedData) of
+		{ok, DencryptedData} ->
+			{ok, DencryptedData};
+		{error, Reason} ->
+			{error, Reason}
 	end.
 
 
