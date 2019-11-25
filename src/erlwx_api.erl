@@ -70,7 +70,6 @@ code_2_session(AppId, Secret, Js_Code, Grant_Type) ->
 						"&grant_type=", Grant_Type]),
 	case erlwx_util:http_get(Url) of
 		{ok, Body} ->
-			io:format("haoxian ~p~n", [{jsx:decode(list_to_binary(Body), [return_maps])}]),
 			case jsx:decode(list_to_binary(Body), [return_maps]) of
 				#{<<"openid">> := OpenId,
 				  <<"session_key">> := SessionKey,

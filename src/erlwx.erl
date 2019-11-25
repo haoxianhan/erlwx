@@ -18,7 +18,7 @@ code_2_session(AppId, Secret, Js_Code) ->
 	erlwx_api:code_2_session(AppId, Secret, Js_Code).
 
 check_signature(RawData, Signature1, SessionKey) ->
-	Signature2 = erlwx_util:sha1(<<RawData/binary, SessionKey/binary>>),
+	Signature2 = erlwx_util:sha1(RawData ++ SessionKey),
 	Signature1 == Signature2.
 
 check_wx_biz_data_crypt(AppId, SessionKey, Iv, EncryptedData) ->
