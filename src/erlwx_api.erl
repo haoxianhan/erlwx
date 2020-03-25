@@ -12,8 +12,8 @@
 		 test_code_2_session/0
 		]).
 
--define(ERLWX_ERROR_99901, json_to_data_error).
--define(ERLWX_ERROR_99902, http_error).
+-define(ERLWX_ERROR_JSON_TO_DATA,  99901).
+-define(ERLWX_ERROR_HTTP_ERROR,    99902).
 
 get_access_token(AppId, Secret) ->
 	get_access_token("client_credential", AppId, Secret).
@@ -84,10 +84,10 @@ code_2_session(AppId, Secret, Js_Code, Grant_Type) ->
 				  <<"errmsg">> := ErrMsg} ->
 					{error, ErrCode, ErrMsg};
 				_ ->
-					{error, ?ERLWX_ERROR_99901, Body}
+					{error, ?ERLWX_ERROR_JSON_TO_DATA, Body}
 			end;
 		_ ->
-			{error, ?ERLWX_ERROR_99902, Url}
+			{error, ?ERLWX_ERROR_HTTP_ERROR, Url}
 	end.
 
 
