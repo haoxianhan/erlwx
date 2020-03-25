@@ -32,10 +32,10 @@ get_access_token(Grant_Type, AppId, Secret) ->
 				  <<"errmsg">> := ErrMsg} ->
 					{error, ErrCode, ErrMsg};
 				_ ->
-					{error, json_to_data_error, Body}
+					{error, ?ERLWX_ERROR_JSON_TO_DATA, Body}
 			end;
 		_ ->
-			{error, http_error, Url}
+			{error, ?ERLWX_ERROR_HTTP_ERROR, Url}
 	end.
 
 
@@ -56,10 +56,10 @@ check_session_key(AccessToken, Signature, OpenId, Sig_Method) ->
 				  <<"errmsg">> := ErrMsg} ->
 					{error, ErrCode, ErrMsg};
 				_ ->
-					{error, json_to_data_error, Body}
+					{error, ?ERLWX_ERROR_JSON_TO_DATA, Body}
 			end;
 		_ ->
-			{error, http_error, Url}
+			{error, ?ERLWX_ERROR_HTTP_ERROR, Url}
 	end.
 
 code_2_session(AppId, Secret, Js_Code) ->
