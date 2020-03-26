@@ -29,10 +29,10 @@ check_water_mark(AppId, FormJson) ->
                 true ->
                     {ok};
                 _ ->
-                    {error, error_invalid}
+                    {error, erlwx_error_invalid0}
             end;
         _ ->
-            {error, error_invalid}
+            {error, erlwx_error_invalid1}
     end.
 
 

@@ -1,5 +1,7 @@
 -module(erlwx).
 
+-include("error.hrl").
+
 -export([
 		 get_access_token/2,
 		 check_session_key/3,
@@ -26,6 +28,6 @@ check_wx_biz_data_crypt(AppId, SessionKey, Iv, EncryptedData) ->
 		{ok, DencryptedData} ->
 			{ok, DencryptedData};
 		{error, Reason} ->
-			{error, Reason}
+			{error, ?ERLWX_ERROR_BIZ_DATA_CRYPT, Reason}
 	end.
 

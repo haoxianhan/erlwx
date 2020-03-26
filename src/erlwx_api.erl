@@ -1,5 +1,7 @@
 -module(erlwx_api).
 
+-include("error.hrl").
+
 -export([
 		 get_access_token/2,
 		 check_session_key/3,
@@ -11,9 +13,6 @@
 		 test_check_session_key/0,
 		 test_code_2_session/0
 		]).
-
--define(ERLWX_ERROR_JSON_TO_DATA,  99901).
--define(ERLWX_ERROR_HTTP_ERROR,    99902).
 
 get_access_token(AppId, Secret) ->
 	get_access_token("client_credential", AppId, Secret).

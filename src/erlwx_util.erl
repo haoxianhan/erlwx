@@ -1,5 +1,7 @@
 -module(erlwx_util).
 
+-include("error.hrl").
+
 -export([
 		 http_get/1,
 		 http_post/2,
