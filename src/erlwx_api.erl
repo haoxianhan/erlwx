@@ -29,7 +29,7 @@ get_access_token(Grant_Type, AppId, Secret) ->
 					{ok, AccessToken, ExpiresIn};
 				#{<<"errcode">> := ErrCode,
 				  <<"errmsg">> := ErrMsg} ->
-					{error, ErrCode, ErrMsg};
+					{error, {wx_error, ErrCode, ErrMsg}};
 				_ ->
 					{error, ?ERLWX_ERROR_JSON_TO_DATA, Body}
 			end;
@@ -53,7 +53,7 @@ check_session_key(AccessToken, Signature, OpenId, Sig_Method) ->
 					{ok};
 				#{<<"errcode">> := ErrCode,
 				  <<"errmsg">> := ErrMsg} ->
-					{error, ErrCode, ErrMsg};
+					{error, {wx_error, ErrCode, ErrMsg}};
 				_ ->
 					{error, ?ERLWX_ERROR_JSON_TO_DATA, Body}
 			end;
@@ -81,7 +81,7 @@ code_2_session(AppId, Secret, Js_Code, Grant_Type) ->
 					{ok, OpenId, SessionKey, <<"0">>};
 				#{<<"errcode">> := ErrCode,
 				  <<"errmsg">> := ErrMsg} ->
-					{error, ErrCode, ErrMsg};
+					{error, {wx_error, ErrCode, ErrMsg}};
 				_ ->
 					{error, ?ERLWX_ERROR_JSON_TO_DATA, Body}
 			end;

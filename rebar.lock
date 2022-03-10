@@ -1,4 +1,8 @@
-[{<<"jsx">>,
+[{<<"erlpkcs">>,
+  {git,"https://github.com/haoxianhan/erlpkcs7.git",
+       {ref,"09938270309e52a532833eec712ac7e744f53ccc"}},
+  0},
+ {<<"jsx">>,
   {git,"https://github.com/talentdeficit/jsx.git",
        {ref,"b1289a16ae3fed51b9f722cbfb6f412c3131f540"}},
   0}].

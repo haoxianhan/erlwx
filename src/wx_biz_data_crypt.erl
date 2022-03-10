@@ -13,7 +13,7 @@ decrypt(AppId, RawSessionKey, RawIv, RawEncryptedData) ->
     Iv = base64:mime_decode(RawIv),
     EncryptedData = base64:mime_decode(RawEncryptedData),
     DecryptData = crypto:block_decrypt(aes_cbc128 , SessionKey, Iv, EncryptedData),
-    FormJson = jsx:decode(pkcs7:unpad(DecryptData), [return_maps]),
+    FormJson = jsx:decode(erlpkcs7:unpad(DecryptData), [return_maps]),
     case check_water_mark(AppId, FormJson) of
         {ok} ->
             {ok, FormJson};
